@@ -25,22 +25,13 @@ module.exports = function (app) {
     // ---------------------------------------------------------------------------
 
     app.post("/api/friends", function (req, res) {
-        // Note the code here. Our "server" will respond to requests and let users know if they have a table or not.
-        // It will do this by sending out the value "true" have a table
-        // req.body is available since we're using the body parsing middleware
-        res.json(true);
 
         // Receive user details (name, photo, scores)
         const user = req.body;
 
-        // parseInt for scores
-        for (let i = 0; i < user.scores.length; i++) {
-            user.scores[i] = parseInt(user.scores[i]);
-        }
-
         // default friend match is the first friend but result will be whoever has the minimum difference in scores
-        let bestFriendIndex = 0;
-        let minimumDifference = 40;
+        let bestFriend = "";
+        let minimumDifference = Infinity;
 
         // in this for-loop, start off with a zero difference and compare the user and the ith friend scores, one set at a time
         //  whatever the difference is, add to the total difference
@@ -52,8 +43,8 @@ module.exports = function (app) {
             }
 
             // if there is a new minimum, change the best friend index and set the new minimum for next iteration comparisons
-            if (totalDifference < minimumDifference) {
-                bestFriendIndex = i;
+            if (totalDifference <= minimumDifference) {
+                bestFriend = i;
                 minimumDifference = totalDifference;
             }
         }
@@ -62,6 +53,6 @@ module.exports = function (app) {
         friendsData.push(user);
 
         // send back to browser the best friend match
-        res.json(friendsData[bestFriendIndex]);
+        res.json(friendsData[bestFriend]);
     });
 };
